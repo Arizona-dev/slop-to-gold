@@ -180,3 +180,49 @@ This order is a synthesis of the talk, not a list the speaker gave. The one firm
 - [ ] PRs come with verification artifacts
 - [ ] Revert rate is tracked and stable
 - [ ] Performance is measured, so slop shows up as a regression
+
+## PR description template
+
+Evidence only gets reviewed if every PR carries it, whoever wrote the code. Put this template where your forge pre-fills new PRs:
+
+- GitHub: `.github/pull_request_template.md`
+- GitLab: `.gitlab/merge_request_templates/Default.md`
+- Azure DevOps: `.azuredevops/pull_request_template.md`
+- Bitbucket: the default description in the repository settings
+
+The template is also in this repository, ready to copy: [`templates/pull_request_template.md`](templates/pull_request_template.md).
+
+```markdown
+## What and why
+
+<!-- The change in one or two sentences, the reason, and a link to the issue. -->
+
+## Evidence that it works
+
+<!-- Tick at least one and attach it. Pick what fits the change. -->
+
+- [ ] Recording or screenshots (UI)
+- [ ] Request and response logs, or traces (service, API)
+- [ ] Commands and their output (CLI, scripts, jobs)
+- [ ] New or changed tests, with the run's results
+- [ ] State chart or diagram (flows with states and transitions)
+- [ ] Benchmark before and after (performance-sensitive code)
+
+## Checks
+
+- [ ] Lint, types and tests pass in CI
+- [ ] No new lint suppressions, and no comments that justify a workaround
+- [ ] No new use of a banned API, and no import across a forbidden boundary
+- [ ] Old instances of any pattern this PR replaces are removed, or a follow-up is linked
+- [ ] Any correction made while writing this PR that could recur is now a check (lint rule, type or test)
+
+## Risk and rollback
+
+<!-- What could break, who would notice, and how to revert. -->
+
+## For the reviewer
+
+<!-- Where to look first, and what you are unsure about. -->
+```
+
+A template is still prose, so enforce it like any other rule: add a CI job that reads the PR description and fails when no evidence box is ticked.
