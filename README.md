@@ -131,8 +131,10 @@ The speaker took six months to build this environment and now ships thousands of
 | PRs shipped by the team, last month | about 11,000 |
 | Contributors with at least one PR in October | 227, many of them drive-by contributors with little context |
 | Stable release cadence | about once a day |
-| Revert rate | steady at about 0.5%, lower in relative terms than before |
+| Revert rate | about 0.5% of merged PRs, steady while volume grew; reported as lower than before |
 | App performance | startup, typing, opening and switching chats all faster than at launch |
+
+PR counts measure output, not quality. In this table, only the revert rate and app performance say whether quality held up, so watch those numbers, not the volume. These are also one team's self-reported figures, from one app.
 
 Their release loop is now automated: each new build triggers agents that use the app like a real user, find bugs, open fix PRs and auto-merge them. This works only because PRs are "good by default" and most product code no longer needs deep human review.
 
@@ -185,6 +187,8 @@ This order is a synthesis of the talk, not a list the speaker gave. The one firm
 - [ ] Revert rate is tracked and stable
 - [ ] Performance is measured, so slop shows up as a regression
 
+Revert rate is the number of merged PRs reverted in a period, divided by the number of PRs merged in it. Count reverts by the commits your forge creates (`Revert "…"` on the main branch) plus fix-forward PRs you label as reverts, and chart it weekly.
+
 ## PR description template
 
 Evidence only gets reviewed if every PR carries it, whoever wrote the code. Put this template where your forge pre-fills new PRs:
@@ -194,42 +198,13 @@ Evidence only gets reviewed if every PR carries it, whoever wrote the code. Put 
 - Azure DevOps: `.azuredevops/pull_request_template.md`
 - Bitbucket: the default description in the repository settings
 
-The template is also in this repository, ready to copy: [`templates/pull_request_template.md`](templates/pull_request_template.md).
+The template is in this repository, ready to copy: [`templates/pull_request_template.md`](templates/pull_request_template.md). It has five sections:
 
-```markdown
-## What and why
-
-<!-- The change in one or two sentences, the reason, and a link to the issue. -->
-
-## Evidence that it works
-
-<!-- Tick at least one and attach it. Pick what fits the change.
-     Only when no kind of evidence applies (docs, comments, CI config), tick N/A and say why. -->
-
-- [ ] Recording or screenshots (UI)
-- [ ] Request and response logs, or traces (service, API)
-- [ ] Commands and their output (CLI, scripts, jobs)
-- [ ] New or changed tests, with the run's results
-- [ ] State chart or diagram (flows with states and transitions)
-- [ ] Benchmark before and after (performance-sensitive code)
-- [ ] N/A, no runtime behavior changes. Reason:
-
-## Checks
-
-- [ ] Lint, types and tests pass in CI
-- [ ] No new lint suppressions, and no comments that justify a workaround
-- [ ] No new use of a banned API, and no import across a forbidden boundary
-- [ ] Old instances of any pattern this PR replaces are removed, or a follow-up is linked
-- [ ] Any correction made while writing this PR that could recur is now a check (lint rule, type or test)
-
-## Risk and rollback
-
-<!-- What could break, who would notice, and how to revert. -->
-
-## For the reviewer
-
-<!-- Where to look first, and what you are unsure about. -->
-```
+- **What and why**: the change, the reason, a link to the issue.
+- **Evidence that it works**: at least one ticked and attached item (recording, logs or traces, command output, test results, state chart, benchmark), or N/A with a reason.
+- **Checks**: CI passes, no new suppressions or justifying comments, no banned APIs or boundary crossings, old patterns removed, recurring corrections turned into checks.
+- **Risk and rollback**: what could break, who would notice, how to revert.
+- **For the reviewer**: where to look first, and what the author is unsure about.
 
 A template is still prose, so enforce it like any other rule: add a CI job that reads the PR description and fails when no evidence box is ticked. Have it also fail when N/A is ticked without a reason, or alongside a change to source code, so N/A cannot become the default answer.
 
