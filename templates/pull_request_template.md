@@ -4,7 +4,8 @@
 
 ## Evidence that it works
 
-<!-- Tick at least one and attach it. Pick what fits the change. -->
+<!-- Tick at least one and attach it. Pick what fits the change.
+     Only when no kind of evidence applies (docs, comments, CI config), tick N/A and say why. -->
 
 - [ ] Recording or screenshots (UI)
 - [ ] Request and response logs, or traces (service, API)
@@ -12,6 +13,7 @@
 - [ ] New or changed tests, with the run's results
 - [ ] State chart or diagram (flows with states and transitions)
 - [ ] Benchmark before and after (performance-sensitive code)
+- [ ] N/A, no runtime behavior changes. Reason:
 
 ## Checks
 

@@ -12,7 +12,7 @@ You can ship agent-written code at huge volume without losing quality, but only 
 - **Review shifts to verification artifacts:** evidence that the code works (recordings, logs, test reports, state charts, proofs), not line-by-line diffs.
 - **Automate last.** Automating a loop that produces slop only produces more slop, at a higher token bill.
 
-Source: a talk by Lauren ("Potato"), engineer on the Grokbot client team. Product names are as transcribed from the talk. The talk's examples come from one desktop app built with TypeScript, React and Electron. This guide states each idea so it applies to any codebase, and keeps the talk's example as an illustration.
+Source: ["All Code Is Slop (Except Mine)"](https://www.youtube.com/watch?v=O_zcc6Xl12g), a talk by Lauren Tan ("poteto"), engineer on the Grok Bot team at SpaceXSI, given at [AI Engineer Code 2026](https://ai.engineer/code/2026/talks/lauren-tan). Internal names (the Dune framework, the Bombadil tool) are as heard in the talk; check the recording before quoting them. The talk's examples come from one desktop app built with TypeScript, React and Electron. This guide states each idea so it applies to any codebase, and keeps the talk's example as an illustration.
 
 ## The trust pyramid
 
@@ -93,7 +93,7 @@ None of these techniques are new. They used to be too expensive to write and mai
 | Property-based testing | Random but valid inputs or actions, checking that stated properties always hold | Code with clear invariants: parsers, serializers (round trips), data transforms, APIs, UIs. Libraries: Hypothesis (Python), fast-check (JS/TS), jqwik (Java), proptest (Rust). The talk: Bombadil, for UI. |
 | Formal verification: TLA+ | A model of the design whose every reachable state is checked | Concurrent or multi-step flows: sync, retries, queues, payments. The talk: notifications across devices and platforms. |
 | Formal verification: Lean | Machine-checked proofs | Small, critical algorithms. The talk: showing a list-virtualization library cannot flicker or jitter. |
-| State charts | Diagrams of states and transitions, from the user's point of view | Anything with a lifecycle: UI flows, orders, jobs, protocols. Review them next to the other evidence to check the agent understood the intent. The talk: a statechart skill in the speaker's pstack plugin. |
+| State charts | Diagrams of states and transitions, from the user's point of view | Anything with a lifecycle: UI flows, orders, jobs, protocols. Review them next to the other evidence to check the agent understood the intent. The talk: a statechart skill in the speaker's [pstack](https://github.com/cursor/plugins/tree/main/pstack) plugin. |
 
 Formal methods have already found real bugs, but the speaker treats them as one more layer, not a silver bullet. Their other value: they force you to state how the product should behave, which exposes whether the agent understood your goals.
 
@@ -199,7 +199,8 @@ The template is also in this repository, ready to copy: [`templates/pull_request
 
 ## Evidence that it works
 
-<!-- Tick at least one and attach it. Pick what fits the change. -->
+<!-- Tick at least one and attach it. Pick what fits the change.
+     Only when no kind of evidence applies (docs, comments, CI config), tick N/A and say why. -->
 
 - [ ] Recording or screenshots (UI)
 - [ ] Request and response logs, or traces (service, API)
@@ -207,6 +208,7 @@ The template is also in this repository, ready to copy: [`templates/pull_request
 - [ ] New or changed tests, with the run's results
 - [ ] State chart or diagram (flows with states and transitions)
 - [ ] Benchmark before and after (performance-sensitive code)
+- [ ] N/A, no runtime behavior changes. Reason:
 
 ## Checks
 
@@ -225,4 +227,8 @@ The template is also in this repository, ready to copy: [`templates/pull_request
 <!-- Where to look first, and what you are unsure about. -->
 ```
 
-A template is still prose, so enforce it like any other rule: add a CI job that reads the PR description and fails when no evidence box is ticked.
+A template is still prose, so enforce it like any other rule: add a CI job that reads the PR description and fails when no evidence box is ticked. Have it also fail when N/A is ticked without a reason, or alongside a change to source code, so N/A cannot become the default answer.
+
+## License
+
+The guide and image are licensed under [CC BY 4.0](LICENSE): reuse and adapt them with credit. The files in [`templates/`](templates/) are dedicated to the public domain under [CC0 1.0](templates/LICENSE), so you can copy them into your repositories without attribution.
