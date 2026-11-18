@@ -18,9 +18,11 @@ Source: ["All Code Is Slop (Except Mine)"](https://www.youtube.com/watch?v=O_zcc
 
 Trust here is not blind faith. It is investment in the agent's environment until you can count on it to do the right thing by default. The speaker ranks where to spend that investment as an inverted pyramid.
 
-![The trust pyramid: codebase, static checks, verification and prose, from widest to narrowest](trust-pyramid.png)
+![The trust pyramid: codebase, deterministic checks, verification and prose, from widest to narrowest](trust-pyramid.png)
 
 Layers 1 and 2 constrain agents in code, so the right thing is the default. Layer 3 finds bugs and checks the agent understood your intent. Layer 4 covers only what needs judgment.
+
+A layer's width is the engineering effort you put into it, not the tokens it uses. Layer 1 takes the most design work. Layer 3 uses the most tokens, because agents run verification on every change (see Layer 3).
 
 ## Layer 1: Treat the codebase as a garden
 
@@ -42,15 +44,17 @@ Code used to arrive a few PRs at a time (3 to review in 2024); now it is closer 
 
 Put these constraints where every change passes through them: a shared framework, core modules or a project template. In the talk they live in an in-house framework, Dune, which is technically ordinary. Its value is the lessons it encodes.
 
-## Layer 2: Turn every correction into a static check
+## Layer 2: Turn every correction into a deterministic check
 
 The rule: each time you correct an agent, ask how to make that correction impossible to repeat. A check in code is reproducible; a line in a rules file is a hope.
 
 - **Lint rules** for banned APIs, banned imports and anti-patterns. They are cheap to write and remove one item from code review forever.
 - **Error messages that teach.** A good lint error tells the agent to fix the root cause, not to patch around it. The agent reads the error at the moment it matters.
 - **Type systems, compilers, dependency-graph analysis** to make wrong code fail to build.
-- **Tests of every kind** as the safety net under all of it.
+- **The test suite in CI**: fast, repeatable tests that must pass before any merge, as the safety net under all of it.
 - **Ratchet, then clean up.** Add the rule to block new occurrences first, then remove the old ones so agents stop copying them.
+
+Tests appear in both Layer 2 and Layer 3. They do different jobs. Layer 2 is the suite that runs on every change and blocks the merge: it stops known mistakes from coming back. Layer 3 is the work the agent does to prove a new change does what you meant: running the software, exploring it, writing new property-based or formal checks. Once such a check is written and fast enough, it joins the Layer 2 suite.
 
 Do this enough times and the list of things to look for in review shrinks to nothing. At that point agents can merge most of their own PRs.
 
@@ -81,7 +85,7 @@ Do not disable this rule or add a comment to justify an exception.
 
 ## Layer 3: Verify, and review the evidence instead of the diff
 
-Verification is where most tokens end up going. One engineer cited in the talk moved from not trusting agents (subtle bugs merged) to spending about 70% of daily tokens on verification. The speaker sees the same split.
+Verification is where most tokens end up going, even though Layer 1 takes most of the engineering effort. One engineer cited in the talk moved from not trusting agents (subtle bugs merged) to spending about 70% of daily tokens on verification. The speaker sees the same split.
 
 None of these techniques are new. They used to be too expensive to write and maintain; agents make them cheap. That is why this is a golden age for testing.
 
