@@ -38,6 +38,7 @@ Code used to arrive a few PRs at a time (3 to review in 2024); now it is closer 
 2. **Encode context in the directory structure.** Name top-level folders after the boundaries that matter, then forbid imports that cross them. Common boundaries: client and server, domain and infrastructure, public API and internals, one service and another.
    - In the talk: agents imported Electron main-process code into the renderer, causing long tasks and jank. Two top-level folders named after the two processes, plus import rules, ended it.
 3. **Ban (almost) all comments.** Agents use comments, docs and Markdown to justify not doing the right thing. They also over-rotate on one small correction and treat it as law. Comments go stale, humans skip them, and nothing enforces them; the speaker's team bans about 99% of them.
+   - The ban targets comments that explain or excuse how the code works. Keep what serves readers outside the code: reference docs for a public API (docstrings, JSDoc, rustdoc), license and legal headers, notes a regulator or compliance process requires, and markers that tools read, such as build tags or generated-file headers.
    - Watch for quick fixes that paper over a design problem: sleeps, timers, retries, catch-all exception handlers, flags that skip a check. Each tends to arrive with a comment explaining why it is fine.
    - In the talk: agents patched a clash between VS Code's imperative core and React's declarative style with timers (`setTimeout`, `requestAnimationFrame`, `requestIdleCallback`), each with a justifying comment. Timers spread, garbage collection spiked, the app lagged.
 4. **Fix the architecture, not the symptom.** When agents keep reaching for hacks, the design is usually fighting them. A better API or architecture removes the problem categorically.
@@ -207,6 +208,8 @@ The template is in this repository, ready to copy: [`templates/pull_request_temp
 - **For the reviewer**: where to look first, and what the author is unsure about.
 
 A template is still prose, so enforce it like any other rule: add a CI job that reads the PR description and fails when no evidence box is ticked. Have it also fail when N/A is ticked without a reason, or alongside a change to source code, so N/A cannot become the default answer.
+
+A GitHub Actions version is ready to copy: [`templates/check-pr-evidence.yml`](templates/check-pr-evidence.yml) goes in `.github/workflows/`. It reads the "Evidence that it works" section, and accepts N/A only when every changed file matches `NA_PATHS` (docs and repository config by default; adjust it to your layout). On other forges, the same shell steps run in a merge request pipeline that reads the description from the forge's API.
 
 ## License
 

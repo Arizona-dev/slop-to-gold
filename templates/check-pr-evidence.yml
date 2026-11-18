@@ -1,0 +1,57 @@
+# Copy to .github/workflows/check-pr-evidence.yml.
+# Fails a pull request whose description has no ticked box under
+# "Evidence that it works", or uses N/A without a reason or on a change
+# that touches files outside NA_PATHS.
+name: PR evidence
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the PR description for evidence
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          # Files where N/A is accepted: docs and repository config. Adjust to your layout.
+          NA_PATHS: '(\.md$|^docs/|^\.github/|^LICENSE)'
+        run: |
+          section=$(printf '%s\n' "$BODY" | tr -d '\r' \
+            | awk '/^## Evidence that it works/ { inside = 1; next } /^## / { inside = 0 } inside')
+          ticked=$(printf '%s\n' "$section" | grep -E '^[[:space:]]*- \[[xX]\]' || true)
+
+          if [ -z "$ticked" ]; then
+            echo "::error::Tick at least one box under 'Evidence that it works' and attach the evidence."
+            exit 1
+          fi
+
+          na=$(printf '%s\n' "$ticked" | grep -F 'N/A' || true)
+          if [ -z "$na" ]; then
+            echo "Evidence provided."
+            exit 0
+          fi
+
+          reason=$(printf '%s\n' "$na" | sed -nE 's/.*Reason:[[:space:]]*(.*[^[:space:]]).*/\1/p')
+          if [ -z "$reason" ]; then
+            echo "::error::N/A is ticked without a reason. Write the reason after 'Reason:'."
+            exit 1
+          fi
+
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename')
+          code=$(printf '%s\n' "$files" | grep -vE "$NA_PATHS" || true)
+          if [ -n "$code" ]; then
+            echo "::error::N/A is only for changes to docs or repository config. These files need evidence:"
+            printf '%s\n' "$code"
+            exit 1
+          fi
+
+          echo "N/A accepted: $reason"

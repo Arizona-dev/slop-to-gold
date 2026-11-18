@@ -5,7 +5,7 @@
 ## Evidence that it works
 
 <!-- Tick at least one and attach it. Pick what fits the change.
-     Only when no kind of evidence applies (docs, comments, CI config), tick N/A and say why. -->
+     Only when no kind of evidence applies (docs, CI or repository config), tick N/A and say why. -->
 
 - [ ] Recording or screenshots (UI)
 - [ ] Request and response logs, or traces (service, API)
